@@ -106,7 +106,7 @@ export default async function DayPage({
       {dayData.holiday ? (
         <p style={{ fontSize: "1.25rem", color: "#666" }}>Holiday. No chores.</p>
       ) : (
-        <TaskList date={dayData.date} initialTasks={dayData.tasks} />
+        <TaskList date={dayData.date} initialTasks={dayData.tasks} readOnly />
       )}
       <p style={linkStyle}>
         <Link href="/days">See other days</Link>
