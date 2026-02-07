@@ -61,8 +61,12 @@ function doGet(e) {
     var taskId = (e.parameter && e.parameter.taskId) || '';
     var completed = (e.parameter && e.parameter.completed) === 'true';
     if (!date || !taskId) return jsonResponse({ error: 'Missing date or taskId' }, 400);
-    toggleStatus(date, taskId, completed);
-    return jsonResponse({ ok: true });
+    try {
+      toggleStatus(date, taskId, completed);
+      return jsonResponse({ ok: true });
+    } catch (err) {
+      return jsonResponse({ error: 'Toggle failed: ' + (err.message || err) }, 500);
+    }
   }
   return jsonResponse({ error: 'Invalid action' }, 400);
 }
@@ -252,14 +256,16 @@ function getDayData(dateStr) {
 
 function toggleStatus(dateStr, taskId, completed) {
   var sheet = getSheet(SHEET_NAME_STATUS);
-  if (!sheet) return;
+  if (!sheet) throw new Error('STATUS sheet not found. Add a tab named STATUS with headers: date, taskId, completed, timestamp');
   var data = sheet.getDataRange().getValues();
+  if (!data || data.length === 0) throw new Error('STATUS sheet has no header row');
   var headers = data[0];
   var dateIdx = headers.indexOf('date');
   var taskIdIdx = headers.indexOf('taskId');
   var completedIdx = headers.indexOf('completed');
   var timestampIdx = headers.indexOf('timestamp');
-  if (dateIdx < 0 || taskIdIdx < 0) return;
+  if (dateIdx < 0 || taskIdIdx < 0) throw new Error('STATUS sheet must have columns: date, taskId');
+  if (completedIdx < 0 || timestampIdx < 0) throw new Error('STATUS sheet must have columns: completed, timestamp');
 
   var rowIndex = -1;
   for (var i = 1; i < data.length; i++) {

@@ -67,3 +67,23 @@ Leave rows 2 and below **empty**. The app and the daily email script will add ro
 - **timezone**: Keep as `Asia/Kolkata` so the 9:00 PM report runs in IST.
 
 Save the sheet. Next step: [Setup Apps Script](setup-apps-script.md).
+
+---
+
+## Troubleshooting: STATUS tab not updating when you check tasks
+
+If checking/unchecking tasks in the app doesn’t add or change rows in the STATUS tab:
+
+1. **STATUS tab and headers**
+   - The tab name must be exactly **STATUS** (all caps).
+   - Row 1 must have exactly these headers in **A1, B1, C1, D1**: `date` | `taskId` | `completed` | `timestamp` (spelling and order matter).
+
+2. **Apps Script**
+   - The script must be **bound** to this Chores Tracker spreadsheet (Extensions → Apps Script from the sheet).
+   - You must **redeploy** the Web App after adding or changing the toggle code: Deploy → Manage deployments → Edit → New version → Deploy. The app uses **GET** for toggle; an old deployment may not support it.
+
+3. **Vercel / env**
+   - In Vercel (or `.env.local`), set **NEXT_PUBLIC_GAS_URL** to the full Web App URL (e.g. `https://script.google.com/macros/s/.../exec`) and **NEXT_PUBLIC_API_TOKEN** to the same value as the **token** row in the SETTINGS tab.
+
+4. **Test in GAS**
+   - In the script editor, run: `function testToggle() { toggleStatus('2025-02-10', 'daily-01', true); }` then check the STATUS tab. If a row appears, the sheet and script are fine; the issue is the request from the app (URL, token, or deployment).
