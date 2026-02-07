@@ -13,10 +13,12 @@ function todayDateStr(): string {
 function timeFromIso(iso: string | undefined): string {
   if (!iso) return "";
   try {
-    const d = new Date(iso);
-    const h = d.getHours();
-    const min = d.getMinutes();
-    return `${h}:${min < 10 ? "0" : ""}${min}`;
+    return new Date(iso).toLocaleTimeString("en-IN", {
+      timeZone: REPORT_TIMEZONE,
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
   } catch {
     return "";
   }
