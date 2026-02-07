@@ -3,6 +3,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { getDay } from "./lib/api";
 import { TaskList } from "./components/TaskList";
 import { SyncStatus } from "./components/SyncStatus";
+import { InstallButton } from "./components/InstallButton";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,10 @@ export default async function TodayPage() {
   if (error) {
     return (
       <main style={mainStyle}>
-        <h1 style={h1Style}>Chores Today</h1>
+        <header style={headerStyle}>
+          <h1 style={h1Style}>Chores Today</h1>
+          <InstallButton />
+        </header>
         <p style={{ fontSize: "1.2rem", color: "#c00" }}>{error}</p>
         <p style={{ fontSize: "1rem", marginTop: 8 }}>
           Check that the app is set up and the sheet is ready.
@@ -48,6 +52,10 @@ export default async function TodayPage() {
   if (!dayData) {
     return (
       <main style={mainStyle}>
+        <header style={headerStyle}>
+          <span style={h1Style}>Chores Today</span>
+          <InstallButton />
+        </header>
         <p>Loading…</p>
       </main>
     );
@@ -62,7 +70,10 @@ export default async function TodayPage() {
 
   return (
     <main style={mainStyle}>
-      <h1 style={h1Style}>Chores Today</h1>
+      <header style={headerStyle}>
+        <h1 style={h1Style}>Chores Today</h1>
+        <InstallButton />
+      </header>
       <p style={dateStyle}>{displayDate}</p>
       {!dayData.holiday && <SyncStatus />}
       {dayData.holiday ? (
@@ -84,10 +95,20 @@ const mainStyle: React.CSSProperties = {
   minHeight: "100vh",
 };
 
+const headerStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 16,
+  marginBottom: 8,
+};
+
 const h1Style: React.CSSProperties = {
   fontSize: "1.75rem",
   fontWeight: 700,
-  margin: "0 0 8px",
+  margin: 0,
+  flex: 1,
+  minWidth: 0,
 };
 
 const dateStyle: React.CSSProperties = {

@@ -1,6 +1,6 @@
 {
-  "name": "Chores Today",
-  "short_name": "Chores",
+  "name": "Chore Tracker",
+  "short_name": "Chore Tracker",
   "description": "What to do today",
   "start_url": "/",
   "display": "standalone",
@@ -8,17 +8,7 @@
   "theme_color": "#1a1a1a",
   "orientation": "portrait",
   "icons": [
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "/icons/icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

@@ -3,10 +3,10 @@ import "./globals.css";
 import { SwRegistration } from "./components/SwRegistration";
 
 export const metadata: Metadata = {
-  title: "Chores Today",
+  title: "Chore Tracker",
   description: "What to do today",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Chores" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Chore Tracker" },
 };
 
 export const viewport: Viewport = {
@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icons/icon.png" />
       </head>
       <body>
         <SwRegistration />
