@@ -27,11 +27,10 @@ export async function toggleTask(
   taskId: string,
   completed: boolean
 ): Promise<void> {
-  const res = await fetch(url("toggle"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ date, taskId, completed }),
-  });
+  const res = await fetch(
+    url("toggle", { date, taskId, completed: String(completed) }),
+    { cache: "no-store" }
+  );
   if (!res.ok) throw new Error("Could not update task");
   const data = await res.json();
   if (data?.error) throw new Error(data.error);

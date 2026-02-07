@@ -56,6 +56,14 @@ function doGet(e) {
     if (data.error) return jsonResponse(data, 400);
     return jsonResponse(data);
   }
+  if (action === 'toggle') {
+    var date = (e.parameter && e.parameter.date) || '';
+    var taskId = (e.parameter && e.parameter.taskId) || '';
+    var completed = (e.parameter && e.parameter.completed) === 'true';
+    if (!date || !taskId) return jsonResponse({ error: 'Missing date or taskId' }, 400);
+    toggleStatus(date, taskId, completed);
+    return jsonResponse({ ok: true });
+  }
   return jsonResponse({ error: 'Invalid action' }, 400);
 }
 

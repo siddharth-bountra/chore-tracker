@@ -32,11 +32,7 @@ export function TaskList({ date, initialTasks }: TaskListProps) {
     try {
       await toggleTask(date, task.taskId, newCompleted);
     } catch {
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.taskId === task.taskId ? { ...t, completed: task.completed, timestamp: task.timestamp } : t
-        )
-      );
+      // Keep optimistic state; only user click should change the checkbox
     } finally {
       setLoadingId(null);
     }

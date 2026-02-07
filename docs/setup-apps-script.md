@@ -58,9 +58,8 @@ To confirm the trigger:
   `YOUR_WEB_APP_URL/exec?action=getDay&date=YYYY-MM-DD&token=YOUR_TOKEN`  
   Returns: `{ date, day, holiday, tasks: [{ taskId, text, completed, timestamp }] }`.
 
-- **POST**  
-  URL: `YOUR_WEB_APP_URL/exec?action=toggle&token=YOUR_TOKEN`  
-  Body (JSON): `{ "date": "YYYY-MM-DD", "taskId": "...", "completed": true|false }`  
-  When `completed` is true, the script sets a timestamp; when false, it clears it.
+- **GET (toggle)**  
+  `YOUR_WEB_APP_URL/exec?action=toggle&token=YOUR_TOKEN&date=YYYY-MM-DD&taskId=...&completed=true|false`  
+  When `completed` is true, the script sets a timestamp; when false, it clears it. (GET is used to avoid CORS preflight issues from the browser.)
 
 After this, use the same **Web app URL** and **token** in the Next.js app (see [Deploy Vercel](deploy-vercel.md)).
