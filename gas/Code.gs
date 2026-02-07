@@ -299,24 +299,40 @@ function setupDailyTrigger() {
 
 function sendDailyReport() {
   var now = new Date();
-  var y = now.getFullYear(), m = now.getMonth() + 1, d = now.getDate();
-  var mStr = m < 10 ? '0' + m : '' + m;
-  var dStr = d < 10 ? '0' + d : '' + d;
-  var dateStr = y + '-' + mStr + '-' + dStr;
-  var dayOfWeek = getDayOfWeek({ y: y, m: m, d: d });
-  if (dayOfWeek === 'SUN') return;
+  var dateStr = Utilities.formatDate(now, 'Asia/Kolkata', 'yyyy-MM-dd');
+  var parsed = parseDate(dateStr);
+  if (!parsed) return;
+  if (getDayOfWeek(parsed) === 'SUN') return;
 
-  var dayData = getDayData(dateStr);
   var done = [], notDone = [];
-  for (var i = 0; i < dayData.tasks.length; i++) {
-    var t = dayData.tasks[i];
-    if (t.completed) {
-      var time = t.timestamp ? (function(iso) {
-        try { var x = new Date(iso); return x.getHours() + ':' + (x.getMinutes() < 10 ? '0' : '') + x.getMinutes(); } catch(e) { return ''; }
-      })(t.timestamp) : '';
-      done.push({ text: t.text, time: time });
-    } else {
-      notDone.push(t.text);
+  var reportUrl = getSetting('report_url');
+  var reportToken = getSetting('report_token');
+  if (reportUrl && reportToken) {
+    try {
+      var base = reportUrl.replace(/\?.*$/, '');
+      var sep = reportUrl.indexOf('?') >= 0 ? '&' : '?';
+      var url = base + sep + 'token=' + encodeURIComponent(reportToken) + '&date=' + encodeURIComponent(dateStr);
+      var resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      if (resp.getResponseCode() === 200) {
+        var data = JSON.parse(resp.getContentText());
+        dateStr = data.date || dateStr;
+        if (Array.isArray(data.done)) data.done.forEach(function(x) { done.push({ text: x.text || '', time: x.time || '' }); });
+        if (Array.isArray(data.notDone)) data.notDone.forEach(function(x) { notDone.push(String(x)); });
+      }
+    } catch (e) {}
+  }
+  if (done.length === 0 && notDone.length === 0) {
+    var dayData = getDayData(dateStr);
+    for (var i = 0; i < dayData.tasks.length; i++) {
+      var t = dayData.tasks[i];
+      if (t.completed) {
+        var time = t.timestamp ? (function(iso) {
+          try { var x = new Date(iso); return x.getHours() + ':' + (x.getMinutes() < 10 ? '0' : '') + x.getMinutes(); } catch(err) { return ''; }
+        })(t.timestamp) : '';
+        done.push({ text: t.text, time: time });
+      } else {
+        notDone.push(t.text);
+      }
     }
   }
 

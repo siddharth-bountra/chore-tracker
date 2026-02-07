@@ -54,17 +54,21 @@ Leave rows 2 and below **empty**. The app and the daily email script will add ro
    |----------|----------------|
    | key      | value          |
 
-3. In **rows 2–4**, add these three rows (replace with your own values where noted):
+3. In **rows 2–5**, add these rows (replace with your own values where noted):
 
-   | key      | value                    |
-   |----------|--------------------------|
-   | recipients | email1@example.com,email2@example.com |
-   | token    | your-secret-token-here   |
-   | timezone | Asia/Kolkata             |
+   | key         | value                    |
+   |-------------|--------------------------|
+   | recipients  | email1@example.com,email2@example.com |
+   | token       | your-secret-token-here   |
+   | timezone    | Asia/Kolkata             |
+   | report_url  | https://your-app.vercel.app/api/today-report |
+   | report_token| same value as REPORT_API_TOKEN in Vercel |
 
-- **recipients**: Comma-separated list of the **2 email addresses** that will get the daily report.
-- **token**: A long random string you make up (e.g. from a password generator). You will use the **same** value as `NEXT_PUBLIC_API_TOKEN` in the Next.js app and (optionally) in the Apps Script Web App URL.
+- **recipients**: Comma-separated list of email addresses that get the daily report.
+- **token**: A long random string you make up. Use the same value as `NEXT_PUBLIC_API_TOKEN` in the app (and in the GAS Web App URL).
 - **timezone**: Keep as `Asia/Kolkata` so the 9:00 PM report runs in IST.
+- **report_url** (optional): Your deployed app’s today-report API URL (e.g. `https://your-project.vercel.app/api/today-report`). When set with **report_token**, the daily email uses **Supabase** as the source of truth instead of the sheet.
+- **report_token**: Same secret as `REPORT_API_TOKEN` in Vercel (or `.env.local`). Required if you set report_url.
 
 Save the sheet. Next step: [Setup Apps Script](setup-apps-script.md).
 
