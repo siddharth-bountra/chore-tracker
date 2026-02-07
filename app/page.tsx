@@ -2,6 +2,7 @@ import Link from "next/link";
 import { unstable_noStore as noStore } from "next/cache";
 import { getDay } from "./lib/api";
 import { TaskList } from "./components/TaskList";
+import { SyncStatus } from "./components/SyncStatus";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,7 @@ export default async function TodayPage() {
     <main style={mainStyle}>
       <h1 style={h1Style}>Chores Today</h1>
       <p style={dateStyle}>{displayDate}</p>
+      {!dayData.holiday && <SyncStatus />}
       {dayData.holiday ? (
         <p style={{ fontSize: "1.25rem", color: "#666" }}>Holiday. No chores.</p>
       ) : (

@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import type { TaskItem } from "../types";
 import { toggleTask } from "../lib/api";
+import {
+  addToQueue,
+  flushQueue,
+  removeFromQueue,
+  setLastSyncedAt,
+} from "../lib/sync";
 
 const CHECKBOX_SIZE = 28;
 
@@ -15,13 +20,27 @@ interface TaskListProps {
 
 export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps) {
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks);
-  const router = useRouter();
 
   useEffect(() => {
     setTasks(initialTasks);
   }, [date, initialTasks]);
 
-  async function handleToggle(task: TaskItem) {
+  useEffect(() => {
+    if (readOnly || typeof window === "undefined") return;
+    flushQueue(toggleTask);
+    const onOnline = () => flushQueue(toggleTask);
+    const onPageHide = () => {
+      if (navigator.onLine) flushQueue(toggleTask);
+    };
+    window.addEventListener("online", onOnline);
+    window.addEventListener("pagehide", onPageHide);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("pagehide", onPageHide);
+    };
+  }, [readOnly]);
+
+  function handleToggle(task: TaskItem) {
     if (readOnly) return;
     const newCompleted = !task.completed;
     setTasks((prev) =>
@@ -35,16 +54,17 @@ export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps
           : t
       )
     );
-    try {
-      await toggleTask(date, task.taskId, newCompleted);
-      router.refresh();
-    } catch {
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.taskId === task.taskId ? { ...t, completed: task.completed, timestamp: task.timestamp } : t
-        )
-      );
-    }
+    addToQueue(date, task.taskId, newCompleted);
+    if (typeof navigator !== "undefined" && !navigator.onLine) return;
+    toggleTask(date, task.taskId, newCompleted)
+      .then(() => {
+        removeFromQueue(date, task.taskId);
+        setLastSyncedAt(Date.now());
+        flushQueue(toggleTask);
+      })
+      .catch(() => {
+        flushQueue(toggleTask);
+      });
   }
 
   if (tasks.length === 0) {
