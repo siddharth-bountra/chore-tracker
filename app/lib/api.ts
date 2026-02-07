@@ -16,9 +16,13 @@ function url(path: string, params?: Record<string, string>): string {
 
 const DAY_CACHE_SECONDS = 900;
 
-export async function getDay(date: string): Promise<DayData> {
+export async function getDay(
+  date: string,
+  options?: { revalidate?: number }
+): Promise<DayData> {
+  const revalidate = options?.revalidate ?? DAY_CACHE_SECONDS;
   const res = await fetch(url("getDay", { date }), {
-    next: { revalidate: DAY_CACHE_SECONDS },
+    next: { revalidate },
   });
   if (!res.ok) throw new Error("Could not load tasks");
   const data = await res.json();

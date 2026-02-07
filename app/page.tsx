@@ -25,7 +25,7 @@ export default async function TodayPage() {
   let dayData;
   let error = "";
   try {
-    dayData = await getDay(date);
+    dayData = await getDay(date, { revalidate: 0 });
   } catch (e) {
     error = e instanceof Error ? e.message : "Could not load tasks.";
   }
