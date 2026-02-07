@@ -13,11 +13,9 @@ interface TaskListProps {
 
 export function TaskList({ date, initialTasks }: TaskListProps) {
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  async function handleToggle(task: TaskItem) {
+  function handleToggle(task: TaskItem) {
     const newCompleted = !task.completed;
-    setLoadingId(task.taskId);
     setTasks((prev) =>
       prev.map((t) =>
         t.taskId === task.taskId
@@ -29,13 +27,9 @@ export function TaskList({ date, initialTasks }: TaskListProps) {
           : t
       )
     );
-    try {
-      await toggleTask(date, task.taskId, newCompleted);
-    } catch {
+    toggleTask(date, task.taskId, newCompleted).catch(() => {
       // Keep optimistic state; only user click should change the checkbox
-    } finally {
-      setLoadingId(null);
-    }
+    });
   }
 
   if (tasks.length === 0) {
@@ -54,7 +48,6 @@ export function TaskList({ date, initialTasks }: TaskListProps) {
             type="button"
             role="checkbox"
             aria-checked={task.completed}
-            disabled={!!loadingId}
             onClick={() => handleToggle(task)}
             style={checkboxStyle(task.completed)}
           >
