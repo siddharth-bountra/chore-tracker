@@ -1,5 +1,5 @@
 import type { DayData } from "../types";
-import { getDayFromSupabase } from "./db";
+import { getDayFromSupabase, getTasksForDayOfWeekFromDb } from "./db";
 
 const GAS_URL = process.env.NEXT_PUBLIC_GAS_URL ?? "";
 const TOKEN = process.env.NEXT_PUBLIC_API_TOKEN ?? "";
@@ -32,6 +32,14 @@ export async function getDay(
   const data = await res.json();
   if (data.error) throw new Error(data.error);
   return data as DayData;
+}
+
+/** Tasks for a day of week only (no date, no status). For "other days" view. Uses Supabase only. */
+export async function getDayByDow(
+  dow: string
+): Promise<{ tasks: { taskId: string; text: string }[] }> {
+  const tasks = await getTasksForDayOfWeekFromDb(dow);
+  return { tasks: tasks ?? [] };
 }
 
 export async function toggleTask(

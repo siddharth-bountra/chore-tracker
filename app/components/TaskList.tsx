@@ -16,9 +16,11 @@ interface TaskListProps {
   date: string;
   initialTasks: TaskItem[];
   readOnly?: boolean;
+  /** When true with readOnly, render as numbered list (1. 2. 3.) */
+  numbered?: boolean;
 }
 
-export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps) {
+export function TaskList({ date, initialTasks, readOnly = false, numbered = false }: TaskListProps) {
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks);
 
   useEffect(() => {
@@ -84,6 +86,15 @@ export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps
           {completedCount}/{tasks.length} tasks completed
         </p>
       )}
+      {(readOnly && numbered) ? (
+        <ol style={numberedListStyle}>
+          {tasks.map((task) => (
+            <li key={task.taskId} style={readOnlyItemStyle}>
+              <span style={labelStyle}>{task.text}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
       <ul style={listStyle}>
         {tasks.map((task) => (
           <li
@@ -91,16 +102,7 @@ export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps
             style={readOnly ? readOnlyItemStyle : itemStyle}
           >
             {readOnly ? (
-              <span
-                style={{
-                  ...labelStyle,
-                  ...(task.completed
-                    ? { textDecoration: "line-through", color: "#666" }
-                    : {}),
-                }}
-              >
-                {task.text}
-              </span>
+              <span style={labelStyle}>{task.text}</span>
             ) : (
               <>
                 <button
@@ -127,6 +129,7 @@ export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps
           </li>
         ))}
       </ul>
+      )}
     </>
   );
 }
@@ -142,6 +145,12 @@ const listStyle: React.CSSProperties = {
   listStyle: "none",
   margin: 0,
   padding: 0,
+};
+
+const numberedListStyle: React.CSSProperties = {
+  listStyle: "decimal",
+  margin: 0,
+  paddingLeft: 24,
 };
 
 const itemStyle: React.CSSProperties = {

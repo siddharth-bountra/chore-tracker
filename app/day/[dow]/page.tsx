@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDay } from "@/app/lib/api";
+import { getDayByDow } from "@/app/lib/api";
 import { TaskList } from "@/app/components/TaskList";
 
 const DAY_NAMES: Record<string, string> = {
@@ -11,30 +11,6 @@ const DAY_NAMES: Record<string, string> = {
   SAT: "Saturday",
   SUN: "Sunday",
 };
-
-const DOW_OFFSET: Record<string, number> = {
-  MON: 0,
-  TUE: 1,
-  WED: 2,
-  THU: 3,
-  FRI: 4,
-  SAT: 5,
-};
-
-function getDateForDow(dow: string): string {
-  const today = new Date();
-  const jsDow = today.getDay();
-  const daysToMonday = jsDow === 0 ? 6 : jsDow - 1;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - daysToMonday);
-  const offset = DOW_OFFSET[dow] ?? 0;
-  const d = new Date(monday);
-  d.setDate(monday.getDate() + offset);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
 
 export default async function DayPage({
   params,
@@ -64,20 +40,17 @@ export default async function DayPage({
     );
   }
 
-  const date = getDateForDow(upper);
-  let dayData;
-  let error = "";
+  let tasks: { taskId: string; text: string }[] = [];
   try {
-    dayData = await getDay(date);
+    const data = await getDayByDow(upper);
+    tasks = data.tasks;
   } catch (e) {
-    error = e instanceof Error ? e.message : "Could not load tasks.";
-  }
-
-  if (error) {
     return (
       <main style={mainStyle}>
         <h1 style={h1Style}>{DAY_NAMES[upper]}</h1>
-        <p style={{ fontSize: "1.2rem", color: "#c00" }}>{error}</p>
+        <p style={{ fontSize: "1.2rem", color: "#c00" }}>
+          {e instanceof Error ? e.message : "Could not load tasks."}
+        </p>
         <p style={linkStyle}>
           <Link href="/days">See other days</Link>
         </p>
@@ -85,29 +58,21 @@ export default async function DayPage({
     );
   }
 
-  if (!dayData) {
-    return (
-      <main style={mainStyle}>
-        <p>Loading…</p>
-      </main>
-    );
-  }
-
-  const displayDate = new Date(date + "T12:00:00").toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
+  const initialTasks = tasks.map((t) => ({
+    taskId: t.taskId,
+    text: t.text,
+    completed: false,
+  }));
 
   return (
     <main style={mainStyle}>
       <h1 style={h1Style}>{DAY_NAMES[upper]}</h1>
-      <p style={dateStyle}>{displayDate}</p>
-      {dayData.holiday ? (
-        <p style={{ fontSize: "1.25rem", color: "#666" }}>Holiday. No chores.</p>
-      ) : (
-        <TaskList date={dayData.date} initialTasks={dayData.tasks} readOnly />
-      )}
+      <TaskList
+        date=""
+        initialTasks={initialTasks}
+        readOnly
+        numbered
+      />
       <p style={linkStyle}>
         <Link href="/days">See other days</Link>
       </p>
@@ -125,12 +90,6 @@ const mainStyle: React.CSSProperties = {
 const h1Style: React.CSSProperties = {
   fontSize: "1.75rem",
   fontWeight: 700,
-  margin: "0 0 8px",
-};
-
-const dateStyle: React.CSSProperties = {
-  fontSize: "1.15rem",
-  color: "#555",
   margin: "0 0 24px",
 };
 

@@ -1,6 +1,6 @@
 import type { DayData, DayOfWeek, TaskItem } from "../types";
 import type { TaskRow } from "./schedule";
-import { getTasksForDate } from "./schedule";
+import { getTasksForDate, getTasksForDayOfWeek } from "./schedule";
 import { getSupabase } from "./supabase-server";
 
 const DOW: DayOfWeek[] = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -84,4 +84,21 @@ export async function toggleInSupabase(
   );
 
   if (error) throw new Error(error.message);
+}
+
+/** Tasks for a day of week only (no date, no status). For "other days" view. */
+export async function getTasksForDayOfWeekFromDb(
+  dow: string
+): Promise<{ taskId: string; text: string }[] | null> {
+  const supabase = getSupabase();
+  if (!supabase) return null;
+
+  const { data: tasksRows, error } = await supabase
+    .from("tasks")
+    .select("task_id, text, schedule_type, days, rule, active")
+    .eq("active", true);
+
+  if (error || !tasksRows?.length) return [];
+
+  return getTasksForDayOfWeek(tasksRows as TaskRow[], dow);
 }

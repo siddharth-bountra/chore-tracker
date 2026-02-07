@@ -101,3 +101,28 @@ export function getTasksForDate(
     .filter((t) => t.active && isTaskDueToday(t, dateObj, dayOfWeek))
     .map((t) => ({ taskId: t.task_id, text: t.text }));
 }
+
+/** Tasks that occur on this day of week only (no date). DAILY, WEEKLY, FORTNIGHTLY; excludes MONTHLY/QUARTERLY. */
+export function getTasksForDayOfWeek(
+  allTasks: TaskRow[],
+  dayOfWeek: string
+): { taskId: string; text: string }[] {
+  const dow = (dayOfWeek || "").toUpperCase();
+  return allTasks
+    .filter((t) => {
+      if (!t.active) return false;
+      const scheduleType = (t.schedule_type || "").toUpperCase();
+      const days = (t.days || "").toUpperCase().split(",").map((s) => s.trim());
+      const rule = (t.rule || "").toUpperCase();
+
+      if (scheduleType === "DAILY") return days.includes(dow);
+      if (scheduleType === "WEEKLY") return days.includes(dow);
+      if (scheduleType === "FORTNIGHTLY") {
+        const parts = rule.split(":");
+        if (parts.length >= 3) return parts[2] === dow;
+        return false;
+      }
+      return false;
+    })
+    .map((t) => ({ taskId: t.task_id, text: t.text }));
+}
