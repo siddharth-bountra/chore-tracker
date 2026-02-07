@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import type { TaskItem } from "../types";
 import { toggleTask } from "../lib/api";
 
@@ -14,8 +15,13 @@ interface TaskListProps {
 
 export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps) {
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks);
+  const router = useRouter();
 
-  function handleToggle(task: TaskItem) {
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [date, initialTasks]);
+
+  async function handleToggle(task: TaskItem) {
     if (readOnly) return;
     const newCompleted = !task.completed;
     setTasks((prev) =>
@@ -29,9 +35,16 @@ export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps
           : t
       )
     );
-    toggleTask(date, task.taskId, newCompleted).catch(() => {
-      // Keep optimistic state; only user click should change the checkbox
-    });
+    try {
+      await toggleTask(date, task.taskId, newCompleted);
+      router.refresh();
+    } catch {
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.taskId === task.taskId ? { ...t, completed: task.completed, timestamp: task.timestamp } : t
+        )
+      );
+    }
   }
 
   if (tasks.length === 0) {
@@ -46,41 +59,54 @@ export function TaskList({ date, initialTasks, readOnly = false }: TaskListProps
 
   return (
     <>
-      <p style={countStyle}>
-        {completedCount}/{tasks.length} tasks completed
-      </p>
+      {!readOnly && (
+        <p style={countStyle}>
+          {completedCount}/{tasks.length} tasks completed
+        </p>
+      )}
       <ul style={listStyle}>
-      {tasks.map((task) => (
-        <li key={task.taskId} style={itemStyle}>
-          {readOnly ? (
-            <span
-              style={readOnlyIndicatorStyle(task.completed)}
-              aria-hidden
-            >
-              {task.completed ? "✓" : ""}
-            </span>
-          ) : (
-            <button
-              type="button"
-              role="checkbox"
-              aria-checked={task.completed}
-              onClick={() => handleToggle(task)}
-              style={checkboxStyle(task.completed)}
-            >
-              {task.completed ? "✓" : ""}
-            </button>
-          )}
-          <span
-            style={{
-              ...labelStyle,
-              ...(task.completed ? { textDecoration: "line-through", color: "#666" } : {}),
-            }}
+        {tasks.map((task) => (
+          <li
+            key={task.taskId}
+            style={readOnly ? readOnlyItemStyle : itemStyle}
           >
-            {task.text}
-          </span>
-        </li>
-      ))}
-    </ul>
+            {readOnly ? (
+              <span
+                style={{
+                  ...labelStyle,
+                  ...(task.completed
+                    ? { textDecoration: "line-through", color: "#666" }
+                    : {}),
+                }}
+              >
+                {task.text}
+              </span>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={task.completed}
+                  onClick={() => handleToggle(task)}
+                  style={checkboxStyle(task.completed)}
+                >
+                  {task.completed ? "✓" : ""}
+                </button>
+                <span
+                  style={{
+                    ...labelStyle,
+                    ...(task.completed
+                      ? { textDecoration: "line-through", color: "#666" }
+                      : {}),
+                  }}
+                >
+                  {task.text}
+                </span>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
@@ -105,6 +131,10 @@ const itemStyle: React.CSSProperties = {
   marginBottom: 20,
 };
 
+const readOnlyItemStyle: React.CSSProperties = {
+  marginBottom: 16,
+};
+
 function checkboxStyle(checked: boolean): React.CSSProperties {
   return {
     width: CHECKBOX_SIZE,
@@ -122,26 +152,6 @@ function checkboxStyle(checked: boolean): React.CSSProperties {
     justifyContent: "center",
     cursor: "pointer",
     flexShrink: 0,
-  };
-}
-
-function readOnlyIndicatorStyle(checked: boolean): React.CSSProperties {
-  return {
-    width: CHECKBOX_SIZE,
-    height: CHECKBOX_SIZE,
-    minWidth: CHECKBOX_SIZE,
-    minHeight: CHECKBOX_SIZE,
-    borderRadius: 6,
-    border: "2px solid #ccc",
-    background: checked ? "#e0e0e0" : "#fff",
-    color: "#666",
-    fontSize: 18,
-    fontWeight: "bold",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-    cursor: "default",
   };
 }
 

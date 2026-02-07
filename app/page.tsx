@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getDay } from "./lib/api";
 import { TaskList } from "./components/TaskList";
 
+export const dynamic = "force-dynamic";
+
 const DAY_NAMES: Record<string, string> = {
   MON: "Monday",
   TUE: "Tuesday",
