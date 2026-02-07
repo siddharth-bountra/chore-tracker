@@ -23,9 +23,9 @@ export default function DaysPage() {
               <span style={labelSmallStyle}>{label}</span>
             </div>
           ) : (
-            <Link key={dow} href={`/day/${dow}`} style={linkStyle}>
+            <a key={dow} href={`/day/${dow}`} style={linkStyle}>
               <span style={buttonStyle}>{label}</span>
-            </Link>
+            </a>
           )
         )}
       </div>
@@ -65,12 +65,15 @@ const linkStyle: React.CSSProperties = {
   display: "block",
   textDecoration: "none",
   color: "inherit",
+  cursor: "pointer",
+  WebkitTapHighlightColor: "transparent",
 };
 
 const buttonStyle: React.CSSProperties = {
   display: "block",
   width: "100%",
   padding: "18px 20px",
+  minHeight: 48,
   fontSize: "1.25rem",
   fontWeight: 600,
   textAlign: "left",

@@ -14,8 +14,12 @@ function url(path: string, params?: Record<string, string>): string {
   return u.toString();
 }
 
+const DAY_CACHE_SECONDS = 900;
+
 export async function getDay(date: string): Promise<DayData> {
-  const res = await fetch(url("getDay", { date }), { cache: "no-store" });
+  const res = await fetch(url("getDay", { date }), {
+    next: { revalidate: DAY_CACHE_SECONDS },
+  });
   if (!res.ok) throw new Error("Could not load tasks");
   const data = await res.json();
   if (data.error) throw new Error(data.error);
