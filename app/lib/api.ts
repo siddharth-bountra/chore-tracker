@@ -20,10 +20,10 @@ export async function getDay(
   date: string,
   options?: { revalidate?: number }
 ): Promise<DayData> {
-  const revalidate = options?.revalidate ?? DAY_CACHE_SECONDS;
-  const res = await fetch(url("getDay", { date }), {
-    next: { revalidate },
-  });
+  const skipCache = options?.revalidate === 0;
+  const res = await fetch(url("getDay", { date }), skipCache
+    ? { cache: "no-store" }
+    : { next: { revalidate: DAY_CACHE_SECONDS } });
   if (!res.ok) throw new Error("Could not load tasks");
   const data = await res.json();
   if (data.error) throw new Error(data.error);

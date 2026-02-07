@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unstable_noStore as noStore } from "next/cache";
 import { getDay } from "./lib/api";
 import { TaskList } from "./components/TaskList";
 
@@ -23,6 +24,7 @@ function todayDateString(): string {
 }
 
 export default async function TodayPage() {
+  noStore();
   const date = todayDateString();
   let dayData;
   let error = "";
