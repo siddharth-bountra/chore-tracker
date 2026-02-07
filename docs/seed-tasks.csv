@@ -1,0 +1,33 @@
+taskId,text,scheduleType,days,rule,active
+daily-01,Clothes wash (when basket is more than half full),DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+daily-02,Kitchen clean (utensils gas counter bottles),DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+daily-03,Broom all rooms + kitchen + store + bathrooms,DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+daily-04,Mop all rooms + kitchen + store + bathrooms,DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+daily-05,Dry clothes,DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+daily-06,Fold clothes + iron shirts only,DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+daily-07,Garbage pickup (kitchen + back terrace),DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+daily-08,Before leaving – final check (curtains open terrace doors closed lights on chairs set gates locked),DAILY,"MON,TUE,WED,THU,FRI,SAT",,TRUE
+dust-mon,Dusting – Living room + washing machine,WEEKLY,MON,,TRUE
+dust-tue,Dusting – Shravani's room + bathroom,WEEKLY,TUE,,TRUE
+dust-wed,Dusting – Siddharth's room + bathroom,WEEKLY,WED,,TRUE
+dust-thu,Dusting – Gym room + bathroom,WEEKLY,THU,,TRUE
+dust-fri,Dusting – Kitchen + Store,WEEKLY,FRI,,TRUE
+dust-sat,Dusting – Back terrace,WEEKLY,SAT,,TRUE
+weekly-terrace-dust,Big terrace – dusting,WEEKLY,"MON,WED,FRI",,TRUE
+weekly-terrace-broom,Big terrace – brooming,WEEKLY,"TUE,THU,SAT",,TRUE
+weekly-vacuum,Vacuum sofa + Simba's bed + carpet,WEEKLY,MON,,TRUE
+weekly-sheets,Simba's bedsheet + sofa sheet change,WEEKLY,THU,,TRUE
+weekly-gym-mop,Special brooming and mopping – Gym room areas,WEEKLY,THU,,TRUE
+weekly-harpic,Bathroom pot harpic clean (all 3),WEEKLY,FRI,,TRUE
+weekly-microwave,Microwave oven and tables cleaning,WEEKLY,SAT,,TRUE
+weekly-handwash,Special clothes (handwash if there),WEEKLY,SAT,,TRUE
+weekly-siddharth-room,Siddharth's room – broom + mop + bed arrange + dusting,WEEKLY,WED,,TRUE
+fn-wm-cartridge,Washing machine cartridge cleaning,FORTNIGHTLY,,FORTNIGHTLY:2ND:TUE,TRUE
+fn-terrace-wash,Back terrace water wash,FORTNIGHTLY,,FORTNIGHTLY:2ND:TUE,TRUE
+fn-bedsheets,Bedsheet pillow cover cushion cover change,FORTNIGHTLY,,FORTNIGHTLY:2ND:WED,TRUE
+fn-pots-vases,Pots vases liquor bottles wiping,FORTNIGHTLY,,FORTNIGHTLY:2ND:FRI,TRUE
+month-01,Fridge clean,MONTHLY,,MONTHLY:DAY:1,TRUE
+month-05,Pelmet dusting,MONTHLY,,MONTHLY:DAY:5,TRUE
+month-10,Lamp shades dusting,MONTHLY,,MONTHLY:DAY:10,TRUE
+month-15,Ceiling cobweb removal and fan wiping,MONTHLY,,MONTHLY:DAY:15,TRUE
+quarter-curtain,Curtain change and dry clean (info),QUARTERLY,,"QUARTERLY:DATE:01-05,04-05,07-05,10-05",TRUE

@@ -1,0 +1,22 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f5f5f5;
+  color: #1a1a1a;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+a:active {
+  opacity: 0.8;
+}
