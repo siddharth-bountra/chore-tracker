@@ -35,10 +35,13 @@ export async function toggleTask(
   taskId: string,
   completed: boolean
 ): Promise<void> {
-  const doFetch = () =>
-    fetch(url("toggle", { date, taskId, completed: String(completed) }), {
-      cache: "no-store",
-    });
+  const params = new URLSearchParams({
+    date,
+    taskId,
+    completed: String(completed),
+  });
+  const apiUrl = `/api/toggle?${params.toString()}`;
+  const doFetch = () => fetch(apiUrl, { cache: "no-store" });
   let res = await doFetch();
   if (!res.ok) {
     await new Promise((r) => setTimeout(r, 1000));
