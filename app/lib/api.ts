@@ -1,4 +1,5 @@
 import type { DayData } from "../types";
+import { getDayFromSupabase } from "./db";
 
 const GAS_URL = process.env.NEXT_PUBLIC_GAS_URL ?? "";
 const TOKEN = process.env.NEXT_PUBLIC_API_TOKEN ?? "";
@@ -20,6 +21,9 @@ export async function getDay(
   date: string,
   options?: { revalidate?: number }
 ): Promise<DayData> {
+  const fromSupabase = await getDayFromSupabase(date);
+  if (fromSupabase !== null) return fromSupabase;
+
   const skipCache = options?.revalidate === 0;
   const res = await fetch(url("getDay", { date }), skipCache
     ? { cache: "no-store" }

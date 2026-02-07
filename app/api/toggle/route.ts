@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { toggleInSupabase } from "@/app/lib/db";
+import { getSupabase } from "@/app/lib/supabase-server";
 
 const GAS_URL = process.env.NEXT_PUBLIC_GAS_URL ?? "";
 const TOKEN = process.env.NEXT_PUBLIC_API_TOKEN ?? "";
 
 export async function GET(request: NextRequest) {
-  if (!GAS_URL || !TOKEN) {
-    return NextResponse.json(
-      {
-        error:
-          "Server misconfigured: set NEXT_PUBLIC_GAS_URL and NEXT_PUBLIC_API_TOKEN in Vercel (or .env.local).",
-      },
-      { status: 503 }
-    );
-  }
   const date = request.nextUrl.searchParams.get("date");
   const taskId = request.nextUrl.searchParams.get("taskId");
   const completed = request.nextUrl.searchParams.get("completed");
@@ -22,13 +15,34 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     );
   }
+  const completedBool = completed === "true";
+
+  if (getSupabase()) {
+    try {
+      await toggleInSupabase(date, taskId, completedBool);
+      return NextResponse.json({ ok: true });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Toggle failed";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  }
+
+  if (!GAS_URL || !TOKEN) {
+    return NextResponse.json(
+      {
+        error:
+          "Server misconfigured: set Supabase (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) or GAS (NEXT_PUBLIC_GAS_URL, NEXT_PUBLIC_API_TOKEN).",
+      },
+      { status: 503 }
+    );
+  }
   const base = GAS_URL.replace(/\/$/, "");
   const url = new URL(base);
   url.searchParams.set("action", "toggle");
   url.searchParams.set("token", TOKEN);
   url.searchParams.set("date", date);
   url.searchParams.set("taskId", taskId);
-  url.searchParams.set("completed", completed === "true" ? "true" : "false");
+  url.searchParams.set("completed", completedBool ? "true" : "false");
   try {
     const res = await fetch(url.toString(), { cache: "no-store" });
     const data = await res.json().catch(() => ({}));
